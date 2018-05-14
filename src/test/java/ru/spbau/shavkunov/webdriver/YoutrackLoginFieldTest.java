@@ -1,10 +1,13 @@
 package ru.spbau.shavkunov.webdriver;
 
 import com.sun.istack.internal.NotNull;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import ru.spbau.shavkunov.webdriver.elements.Button;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.spbau.shavkunov.webdriver.pages.LoginPage;
 import ru.spbau.shavkunov.webdriver.pages.User;
 import ru.spbau.shavkunov.webdriver.pages.UsersPage;
@@ -15,33 +18,30 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class YoutrackLoginFieldTest {
-    private static WebDriver webDriver = new ChromeDriver();
+    private static WebDriver webDriver;
     private static String root = "http://localhost:8080";
-    private UsersPage usersPage;
     private HashSet<String> previousLogins;
+    private UsersPage usersPage;
 
-    @BeforeClass
-    public static void loginAsRoot() {
+    @Before
+    public void saveOldUsers() {
         final @NotNull String login = "root";
         final @NotNull String password = "1";
 
+        webDriver = new ChromeDriver();
         webDriver.get(root);
+
+        WebDriverWait wait = new WebDriverWait(webDriver, 5);
 
         LoginPage loginPage = new LoginPage(webDriver);
         loginPage.getLoginField().insertText(login);
         loginPage.getPasswordField().insertText(password);
         loginPage.getLoginButton().click();
-        System.out.println(webDriver.getTitle());
-    }
 
-    @AfterClass
-    public static void quit() {
-        webDriver.quit();
-    }
+        wait.until(ExpectedConditions.urlContains("/dashboard"));
 
-    @Before
-    public void saveOldUsers() {
-        usersPage = new UsersPage(webDriver, root);
+        usersPage = new UsersPage(webDriver);
+        usersPage.loadUsers();
         List<User> users = usersPage.getUsersInTable();
 
         previousLogins = new HashSet<>();
@@ -52,7 +52,7 @@ public class YoutrackLoginFieldTest {
 
     @After
     public void deleteNewUsers() throws NoDeleteButtonException {
-        List<User> users = usersPage.getUsersInTable();
+        /*List<User> users = usersPage.getUsersInTable();
 
         for (User user : users) {
             if (!previousLogins.contains(user.getLogin())) {
@@ -64,7 +64,9 @@ public class YoutrackLoginFieldTest {
                 user.getDeleteUserButton().click();
                 webDriver.switchTo().alert().accept();
             }
-        }
+        }*/
+
+        webDriver.quit();
     }
 
     @Test
@@ -74,6 +76,7 @@ public class YoutrackLoginFieldTest {
         assertFalse(previousLogins.contains(login));
 
         usersPage.createUser(login, "123");
+        usersPage.loadUsers();
 
         assertFalse(previousLogins.contains(login));
 

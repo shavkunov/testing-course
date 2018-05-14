@@ -12,30 +12,47 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UsersPage {
-    private static final String userPagePostfix = "/users";
-    private Button createUser;
+    private static final By createUserButtonSelector = By.id("id_l.U.createNewUser");
     private WebDriver webDriver;
 
-    public UsersPage(WebDriver webDriver, String root) {
+    public UsersPage(WebDriver webDriver) {
         this.webDriver = webDriver;
+    }
 
-        String usersUrl = root + userPagePostfix;
-        webDriver.get(usersUrl);
+    public void loadUsers() {
+        WebDriverWait wait = new WebDriverWait(webDriver, 5);
 
-        WebDriverWait wait = new WebDriverWait(webDriver, 3);
-        wait.until(ExpectedConditions.urlToBe(usersUrl));
+        WebElement settingsDropdown =
+                webDriver.findElement(By.cssSelector(".ring-menu__item__i.ring-font-icon.ring-font-icon_cog"));
+        settingsDropdown.click();
+        By dropdownOptionsSelector = By.cssSelector(".ring-dropdown__item.ring-link");
 
-        this.createUser = new Button(webDriver, "id_l.U.createNewUser");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(dropdownOptionsSelector));
+
+        List<WebElement> dropdownOptions = webDriver.findElements(dropdownOptionsSelector);
+        WebElement usersDropdown =
+                dropdownOptions.stream()
+                        .filter(webElement -> webElement.getAttribute("href").endsWith("/users"))
+                        .findFirst()
+                        .get();
+        usersDropdown.click();
+
+        wait.until(ExpectedConditions.urlContains("/users"));
     }
 
     public void createUser(String login, String password) {
-        createUser.click();
+        WebElement createUserButton = webDriver.findElement(createUserButtonSelector);
+        createUserButton.click();
+
+        WebDriverWait wait = new WebDriverWait(webDriver, 5);
 
         CreateUserForm form = new CreateUserForm(webDriver);
         form.getLoginField().insertText(login);
         form.getPasswordField().insertText(password);
         form.getPasswordConfirmField().insertText(password);
         form.getOkButton().click();
+
+        wait.until(ExpectedConditions.urlContains("/editUser"));
     }
 
     public List<User> getUsersInTable() {

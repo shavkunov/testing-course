@@ -10,6 +10,10 @@ public class TextField {
         this.element = ElementFactory.getElementById(webDriver, elementId);
     }
 
+    public TextField(WebElement element) {
+        this.element = element;
+    }
+
     public void insertText(String text) {
         element.sendKeys(text);
     }

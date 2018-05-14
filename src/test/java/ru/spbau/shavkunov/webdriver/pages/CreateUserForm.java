@@ -1,6 +1,9 @@
 package ru.spbau.shavkunov.webdriver.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.spbau.shavkunov.webdriver.elements.Button;
 import ru.spbau.shavkunov.webdriver.elements.TextField;
 
@@ -11,6 +14,11 @@ public class CreateUserForm {
     private Button okButton;
 
     public CreateUserForm(WebDriver webDriver) {
+        System.out.println("currentUrl is " + webDriver.getCurrentUrl());
+        By loginFieldSelector = By.id("id_l.U.cr.login");
+        WebDriverWait wait = new WebDriverWait(webDriver, 5);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(loginFieldSelector));
+
         loginField = new TextField(webDriver, "id_l.U.cr.login");
         passwordField = new TextField(webDriver, "id_l.U.cr.password");
         passwordConfirmField = new TextField(webDriver, "id_l.U.cr.confirmPassword");
