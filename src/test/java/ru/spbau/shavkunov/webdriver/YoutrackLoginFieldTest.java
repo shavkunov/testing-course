@@ -51,15 +51,17 @@ public class YoutrackLoginFieldTest {
 
     @After
     public void deleteNewUsers() throws NoDeleteButtonException {
-        List<String> users = usersPage.getUsersInTable();
+        try {
+            List<String> users = usersPage.getUsersInTable();
 
-        for (String user : users) {
-            if (!previousLogins.contains(user)) {
-                usersPage.deleteUser(user);
+            for (String user : users) {
+                if (!previousLogins.contains(user)) {
+                    usersPage.deleteUser(user);
+                }
             }
+        } finally {
+            webDriver.quit();
         }
-
-        webDriver.quit();
     }
 
     private void simpleUser(String login) {
@@ -112,13 +114,36 @@ public class YoutrackLoginFieldTest {
     }
 
     //negative tests
-    //@Test(expected = Exception.class)
-    public void doubleSameUser() throws Exception {
+    @Test
+    public void doubleSameUser() {
         String login = "testing";
 
         usersPage.createUser(login, "123");
         usersPage.loadUsers();
-        usersPage.createUser(login, "123");
-        //usersPage.loadUsers();
+        usersPage.createUserWithError(login, "123");
+    }
+
+    @Test
+    public void leadingSpace() {
+        String login = " Space";
+        usersPage.createUserWithError(login, "123");
+    }
+
+    @Test
+    public void endingSpace() {
+        String login = "Space ";
+        usersPage.createUserWithError(login, "123");
+    }
+
+    @Test
+    public void multipleWords() {
+        String login = "Hello world";
+        usersPage.createUserWithError(login, "123");
+    }
+
+
+    @Test
+    public void emptyLogin() {
+        usersPage.createUserWithTextFieldError("", "123");
     }
 }

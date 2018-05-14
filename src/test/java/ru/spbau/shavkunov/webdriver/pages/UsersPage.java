@@ -40,18 +40,37 @@ public class UsersPage {
         wait.until(ExpectedConditions.urlContains("/users"));
     }
 
-    public void createUser(String login, String password) {
+    private void creatingUserRoutine(String login, String password) {
         new Button(webDriver, "id_l.U.createNewUser").click();
-
-        WebDriverWait wait = new WebDriverWait(webDriver, 5);
 
         CreateUserForm form = new CreateUserForm(webDriver);
         form.getLoginField().insertText(login);
         form.getPasswordField().insertText(password);
         form.getPasswordConfirmField().insertText(password);
         form.getOkButton().click();
+    }
 
+    public void createUser(String login, String password) {
+        WebDriverWait wait = new WebDriverWait(webDriver, 5);
+        creatingUserRoutine(login, password);
         wait.until(ExpectedConditions.urlContains("/editUser"));
+    }
+
+    public void createUserWithError(String login, String password) {
+        waitingError(login, password, ".message.error");
+    }
+
+    public void createUserWithTextFieldError(String login, String password) {
+        waitingError(login, password, ".error-bulb2");
+    }
+
+    private void waitingError(String login, String password, String expectedElement) {
+        WebDriverWait wait = new WebDriverWait(webDriver, 5);
+        creatingUserRoutine(login, password);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(expectedElement)));
+
+        Button cancelButton = new Button(webDriver, "id_l.U.cr.createUserCancel");
+        cancelButton.click();
     }
 
     public void deleteUser(String login) throws NoDeleteButtonException {
