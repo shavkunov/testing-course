@@ -14,10 +14,8 @@ public class CreateUserForm {
     private Button okButton;
 
     public CreateUserForm(WebDriver webDriver) {
-        System.out.println("currentUrl is " + webDriver.getCurrentUrl());
-        By loginFieldSelector = By.id("id_l.U.cr.login");
         WebDriverWait wait = new WebDriverWait(webDriver, 5);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(loginFieldSelector));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("id_l.U.cr.login")));
 
         loginField = new TextField(webDriver, "id_l.U.cr.login");
         passwordField = new TextField(webDriver, "id_l.U.cr.password");

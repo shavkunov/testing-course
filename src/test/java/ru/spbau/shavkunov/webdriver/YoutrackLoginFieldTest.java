@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import ru.spbau.shavkunov.webdriver.elements.Button;
 import ru.spbau.shavkunov.webdriver.pages.LoginPage;
 import ru.spbau.shavkunov.webdriver.pages.User;
 import ru.spbau.shavkunov.webdriver.pages.UsersPage;
@@ -19,7 +20,6 @@ import static org.junit.Assert.*;
 
 public class YoutrackLoginFieldTest {
     private static WebDriver webDriver;
-    private static String root = "http://localhost:8080";
     private HashSet<String> previousLogins;
     private UsersPage usersPage;
 
@@ -29,6 +29,7 @@ public class YoutrackLoginFieldTest {
         final @NotNull String password = "1";
 
         webDriver = new ChromeDriver();
+        String root = "http://localhost:8080";
         webDriver.get(root);
 
         WebDriverWait wait = new WebDriverWait(webDriver, 5);
@@ -52,7 +53,7 @@ public class YoutrackLoginFieldTest {
 
     @After
     public void deleteNewUsers() throws NoDeleteButtonException {
-        /*List<User> users = usersPage.getUsersInTable();
+        List<User> users = usersPage.getUsersInTable();
 
         for (User user : users) {
             if (!previousLogins.contains(user.getLogin())) {
@@ -64,7 +65,7 @@ public class YoutrackLoginFieldTest {
                 user.getDeleteUserButton().click();
                 webDriver.switchTo().alert().accept();
             }
-        }*/
+        }
 
         webDriver.quit();
     }

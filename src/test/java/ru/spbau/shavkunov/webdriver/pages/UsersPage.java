@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UsersPage {
-    private static final By createUserButtonSelector = By.id("id_l.U.createNewUser");
     private WebDriver webDriver;
 
     public UsersPage(WebDriver webDriver) {
@@ -41,8 +40,7 @@ public class UsersPage {
     }
 
     public void createUser(String login, String password) {
-        WebElement createUserButton = webDriver.findElement(createUserButtonSelector);
-        createUserButton.click();
+        new Button(webDriver, "id_l.U.createNewUser").click();
 
         WebDriverWait wait = new WebDriverWait(webDriver, 5);
 
