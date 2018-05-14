@@ -1,11 +1,12 @@
 package ru.spbau.shavkunov.webdriver.pages;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import ru.spbau.shavkunov.webdriver.NoDeleteButtonException;
 import ru.spbau.shavkunov.webdriver.elements.Button;
 
 import java.util.List;
@@ -53,37 +54,37 @@ public class UsersPage {
         wait.until(ExpectedConditions.urlContains("/editUser"));
     }
 
-    public List<User> getUsersInTable() {
-        WebElement userTableBody = webDriver.findElement(By.cssSelector(".table.users-table tbody"));
+    public void deleteUser(String login) throws NoDeleteButtonException {
+        WebElement userRow = getRows().stream()
+                                   .filter(row -> row.findElement(By.cssSelector("*[cn='l.U.usersList.UserLogin.editUser']"))
+                                           .getText().equals(login))
+                                   .findFirst()
+                                   .orElse(null);
 
-        return userTableBody.findElements(By.tagName("tr")).stream().map(webElement -> {
-            WebElement loginElement = webElement.findElement(By.cssSelector("*[cn='l.U.usersList.UserLogin.editUser']"));
-
-            String login = loginElement.getText();
-            Button deleteButton;
-            try {
-                WebElement deleteButtonWebElement = webElement.findElement(
-                        By.cssSelector("td:last-child a[cn='l.U.usersList.deleteUser']")
-                );
-
-                deleteButton = new Button(deleteButtonWebElement);
-            } catch (NoSuchElementException e) {
-                deleteButton = null;
-            }
-
-            return new User(login, deleteButton);
-        }).collect(Collectors.toList());
-    }
-
-    public User getUserFromTable(String login) {
-        List<User> users = getUsersInTable();
-
-        for (User user : users ) {
-            if (user.getLogin().equals(login)) {
-                return user;
-            }
+        if (userRow == null) {
+            throw new NoDeleteButtonException();
         }
 
-        return null;
+        WebDriverWait wait = new WebDriverWait(webDriver, 5);
+        WebElement deleteButton = userRow.findElement(By.cssSelector("*[cn='l.U.usersList.deleteUser']"));
+        deleteButton.click();
+
+        wait.until(ExpectedConditions.alertIsPresent());
+        Alert alert = webDriver.switchTo().alert();
+        alert.accept();
+        wait.until(ExpectedConditions.stalenessOf(userRow));
+    }
+
+    private List<WebElement> getRows() {
+        WebElement rows = webDriver.findElement(By.cssSelector(".table.users-table tbody"));
+
+        return rows.findElements(By.tagName("tr"));
+    }
+
+    public List<String> getUsersInTable() {
+        return getRows().stream()
+                        .map(row -> row.findElement(By.cssSelector("*[cn='l.U.usersList.UserLogin.editUser']")))
+                        .map(WebElement::getText)
+                        .collect(Collectors.toList());
     }
 }
