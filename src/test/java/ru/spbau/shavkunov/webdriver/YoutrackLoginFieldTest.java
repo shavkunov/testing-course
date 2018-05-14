@@ -12,10 +12,7 @@ import ru.spbau.shavkunov.webdriver.pages.UsersPage;
 import java.util.HashSet;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class YoutrackLoginFieldTest {
     private static WebDriver webDriver = new ChromeDriver();
@@ -34,6 +31,7 @@ public class YoutrackLoginFieldTest {
         loginPage.getLoginField().insertText(login);
         loginPage.getPasswordField().insertText(password);
         loginPage.getLoginButton().click();
+        System.out.println(webDriver.getTitle());
     }
 
     @AfterClass

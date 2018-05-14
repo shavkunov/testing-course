@@ -1,8 +1,6 @@
 package ru.spbau.shavkunov.webdriver.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import ru.spbau.shavkunov.webdriver.elements.Button;
 import ru.spbau.shavkunov.webdriver.elements.TextField;
 

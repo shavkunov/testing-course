@@ -12,23 +12,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UsersPage {
+    private static final String userPagePostfix = "/users";
     private Button createUser;
     private WebDriver webDriver;
 
     public UsersPage(WebDriver webDriver, String root) {
         this.webDriver = webDriver;
 
-        String usersUrl = root + "/users";
-        loadUsersPage(webDriver, usersUrl);
-
-        this.createUser = new Button(webDriver, "id_l.U.createNewUser");
-    }
-
-    private void loadUsersPage(WebDriver webDriver, String usersUrl) {
+        String usersUrl = root + userPagePostfix;
         webDriver.get(usersUrl);
 
-        WebDriverWait wait = new WebDriverWait(webDriver, 10);
+        WebDriverWait wait = new WebDriverWait(webDriver, 3);
         wait.until(ExpectedConditions.urlToBe(usersUrl));
+
+        this.createUser = new Button(webDriver, "id_l.U.createNewUser");
     }
 
     public void createUser(String login, String password) {
